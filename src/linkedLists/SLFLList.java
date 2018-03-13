@@ -7,6 +7,9 @@ package linkedLists;
  *
  */
 
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import linkedLists.LinkedList;
@@ -25,6 +28,7 @@ public class SLFLList<E> extends SLList<E>
 	
 	public void addFirstNode(Node<E> nuevo) {
 		// TODO Auto-generated method stub
+		
 		((SNode<E>) nuevo).setNext(first); 
 		first = (SNode<E>) nuevo; 
 		length++;
@@ -35,20 +39,41 @@ public class SLFLList<E> extends SLList<E>
 		// TODO Auto-generated method stub
 		((SNode<E>) nuevo).setNext(((SNode<E>) target).getNext()); 
 		((SNode<E>) target).setNext((SNode<E>) nuevo); 
+		
+		SNode<E> targetN = (SNode<E>) target;
+		SNode<E> nuevoN = (SNode<E>) nuevo;
+
+		nuevoN.setNext(targetN.getNext());
+		targetN.setNext(nuevoN);
+		
 		length++;
 		
 		
 	}
 
+	private Node<E> findNodePrevTo(Node<E> target) {
+		// Pre: target is a node in the list
+		if (target == first) 
+			return null; 
+		else { 
+			SNode<E> prev = first; 
+			while (prev != null && prev.getNext() != target) 
+				prev = prev.getNext();  
+			return prev; 
+		}
+	}
+	
 	public void addNodeBefore(Node<E> target, Node<E> nuevo) {
 		// TODO Auto-generated method stub
+		
+		Node<E> previousNode = null;
 		
 		if (target == first)
 			this.addFirstNode(nuevo); 
 		else { 
 			Node<E> prevNode = findNodePrevTo(target);  
 			this.addNodeAfter(prevNode, nuevo); 
-	}
+		}
 		
 	}
 
@@ -63,15 +88,10 @@ public class SLFLList<E> extends SLList<E>
 	}
 
 	public Node<E> getLastNode() throws NoSuchElementException {
-		if (last == null)
-			throw new NoSuchElementException("getLastNode(): Empty list."); 
-		else { 
-			SNode<E> curr = last; 
-			while (((SNode<E>) curr).getNext() != null)
-				curr = curr.getNext(); 
-			return curr; 
+		 
+			return last; 
 		}
-	}
+	
 
 	public Node<E> getNodeAfter(Node<E> target) throws NoSuchElementException {
 		// TODO Auto-generated method stub
@@ -102,6 +122,10 @@ public class SLFLList<E> extends SLList<E>
 		
 		if (target == first) 
 			first = first.getNext(); 
+		if(target == last) {
+			Node<E> prevNode = findNodePrevTo(target);  
+			this.addNodeAfter(prevNode, last);
+		}
 		else { 
 			SNode<E> prevNode = (SNode<E>) this.getNodeBefore(target); 
 			prevNode.setNext(((SNode<E>) target).getNext()); 
@@ -113,6 +137,33 @@ public class SLFLList<E> extends SLList<E>
 	
 	public Node<E> createNewNode() {
 		return new SNode<E>();
+	}
+	
+	public <T> T[] toArray(T[] array) { 
+		if (array.length < this.length) { 
+			array = (T[]) Array.newInstance(array.getClass().getComponentType(), this.length);
+		} 
+		else if (array.length > this.length){
+			for (int j=this.length; j< array.length; j++){
+				array[j] = null;
+			}
+		}
+		SNode<T> fn = (SNode<T>)this.getFirstNode();
+		for (int i=0; i < length; i++) {
+			array[i] = fn.getElement();
+			fn = fn.getNext();
+		}
+		return array;	
+	}
+
+	public Object[] toArray() { 
+		Object[] array = new Object[this.length]; 
+		SNode<E> fn = (SNode<E>)this.getFirstNode();
+		for (int i=0; i < length; i++) {
+			array[i] = fn.getElement();
+			fn = fn.getNext();
+		}
+		return array;	
 	}
 
 }
